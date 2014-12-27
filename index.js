@@ -92,16 +92,24 @@ function update() {
          var xa = gf * xfact(dist, xx.position, yy.position) / xx.mass;
          var ya = gf * yfact(dist, xx.position, yy.position) / xx.mass;
          var za = gf * zfact(dist, xx.position, yy.position) / xx.mass;
-         var xstart = { x: xx.position.x, y: xx.position.y, z:xx.position.z };
+         var startp = { x: xx.position.x, y: xx.position.y, z:xx.position.z };
+         var startv = { x: xx.velocity.x, y: xx.velocity.y, z:xx.velocity.z };
          var xchange = Math.pow(secondsPerFrame,2)* xa/2 + xx.velocity.x*secondsPerFrame;
          xx.position.x = xx.position.x + xchange;
          var ychange = Math.pow(secondsPerFrame,2)* ya/2 + xx.velocity.y*secondsPerFrame;
          xx.position.y = xx.position.y + ychange;
          var zchange = Math.pow(secondsPerFrame,2)* za/2 + xx.velocity.z*secondsPerFrame;
          xx.position.z = xx.position.z + zchange;
-         xx.velocity = { x : (xx.position.x - xstart.x)/secondsPerFrame,
-                         y : (xx.position.y - xstart.y)/secondsPerFrame, 
-                         z : (xx.position.z - xstart.z)/secondsPerFrame};
+
+         if (2 == getQueryVariable('velocity')) {
+            xx.velocity.x = startv.x + xa * secondsPerFrame;
+            xx.velocity.y = startv.y + ya * secondsPerFrame;
+            xx.velocity.z = startv.z + za * secondsPerFrame;
+         } else {
+            xx.velocity = { x : (xx.position.x - startp.x)/secondsPerFrame,
+                            y : (xx.position.y - startp.y)/secondsPerFrame, 
+                            z : (xx.position.z - startp.z)/secondsPerFrame};
+         }
       }
    }
 }
