@@ -44,11 +44,6 @@ if (getQueryVariable('bodies')) {
       bodies[ii] = system[bodies[ii]];
    }
 }
-var forceFactor = 1.0;
-if (getQueryVariable('force')) {
-   forceFactor = parseFloat(getQueryVariable('force'));
-}
-
 //var bodies = [sun, earth];
 //var bodies = [sun, jupiter];
 var height = 778500000000*4;
@@ -87,16 +82,17 @@ function update() {
          }
          var xx = bodies[xi];
          var yy = bodies[yi];
-         var gf = force(xx, yy)*forceFactor;
+         var gf = force(xx, yy);
          var dist = distance(xx.position, yy.position);
          var xa = gf * xfact(dist, xx.position, yy.position) / xx.mass;
          var ya = gf * yfact(dist, xx.position, yy.position) / xx.mass;
          var za = gf * zfact(dist, xx.position, yy.position) / xx.mass;
 
+         //update new velocity
          xx.velocity.x = xx.velocity.x + xa * secondsPerFrame;
          xx.velocity.y = xx.velocity.y + ya * secondsPerFrame;
          xx.velocity.z = xx.velocity.z + za * secondsPerFrame;
-
+         //update new position
          xx.position.x = xx.position.x + xx.velocity.x*secondsPerFrame;
          xx.position.y = xx.position.y + xx.velocity.y*secondsPerFrame;
          xx.position.z = xx.position.z + xx.velocity.z*secondsPerFrame;
