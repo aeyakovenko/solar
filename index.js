@@ -6,6 +6,20 @@
 var AU=149597870700;
 var AUD=AU/(24*60*60);
 var secondsPerFrame = 24*60*60;
+
+function getQueryVariable(variable) {
+   var query = window.location.search.substring(1);
+   var vars = query.split('&');
+   for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (decodeURIComponent(pair[0]) == variable) {
+         return decodeURIComponent(pair[1]);
+      }
+   }
+   console.log('Query variable %s not found', variable);
+   return null;
+}
+
 var sun = { mass:1.989e30, name:"sun", radius : 695800000,
             position:{x:2.821077216283755E-03*AU, y:-8.812560963927427E-04*AU,z:-1.367319222648302E-04*AU},
             velocity:{x:4.006129074936341E-06*AUD,y:5.206019702028657E-06*AUD,z:-9.767312861198032E-08*AUD}};
@@ -18,7 +32,23 @@ var jupiter = { mass:1.898e27, name:"jupiter", radius: 69911000,
                 position:{x:-3.699272789771378E+00*AU, y:3.817832117430814E+00*AU, z:6.684392539978537E-02*AU},
                 velocity:{x:-5.509724185671973E-03*AUD,y:-4.896023689305917E-03*AUD,z:1.436000235561424E-04*AUD}};
 
-var bodies = [sun, earth, jupiter];
+var system = {};
+system["sun"] = sun;
+system["earth"] = earth;
+system["jupiter"] = jupiter;
+
+var bodies = [sun,earth,jupiter];
+if (getQueryVariable('bodies')) {
+   bodies = getQueryVariable('bodies').split(',');
+   for (ii in bodies) {
+      bodies[ii] = system[bodies[ii]];
+   }
+}
+var forceFactor = 1.0;
+if (getQueryVariable('force')) {
+   forceFactor = parseFloat(getQueryVariable('force'));
+}
+
 //var bodies = [sun, earth];
 //var bodies = [sun, jupiter];
 var height = 778500000000*4;
@@ -57,7 +87,7 @@ function update() {
          }
          var xx = bodies[xi];
          var yy = bodies[yi];
-         var gf = force(xx, yy);
+         var gf = force(xx, yy)*forceFactor;
          var dist = distance(xx.position, yy.position);
          var xa = gf * xfact(dist, xx.position, yy.position) / xx.mass;
          var ya = gf * yfact(dist, xx.position, yy.position) / xx.mass;
