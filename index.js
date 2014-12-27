@@ -21,17 +21,14 @@ function getQueryVariable(variable) {
 }
 
 var sun = { mass:1.989e30, name:"sun", radius : 695800000,
-            display:{x:0,y:0},
             position:{x:2.821077216283755E-03*AU, y:-8.812560963927427E-04*AU,z:-1.367319222648302E-04*AU},
             velocity:{x:4.006129074936341E-06*AUD,y:5.206019702028657E-06*AUD,z:-9.767312861198032E-08*AUD}};
 
 var earth = { mass:5.972e24, name:"earth", radius: 6371000,
-              display:{x:0,y:0},
               position : {x:-8.169080016031242e-02*AU, y:9.789642498007118e-01*AU,  z:-1.701348267269417e-04*AU},
               velocity : {x:-1.741913145545285e-02*AUD, y:-1.544709454417245e-03*AUD, z:5.355488200427113e-07*AUD}};
 
 var jupiter = { mass:1.898e27, name:"jupiter", radius: 69911000,
-                display:{x:0,y:0},
                 position:{x:-3.699272789771378E+00*AU, y:3.817832117430814E+00*AU, z:6.684392539978537E-02*AU},
                 velocity:{x:-5.509724185671973E-03*AUD,y:-4.896023689305917E-03*AUD,z:1.436000235561424E-04*AUD}};
 
@@ -96,13 +93,14 @@ function update() {
          var ya = gf * yfact(dist, xx.position, yy.position) / xx.mass;
          var za = gf * zfact(dist, xx.position, yy.position) / xx.mass;
 
-         xx.position.x = xx.position.x + Math.pow(secondsPerFrame,2)* xa/2 + xx.velocity.x*secondsPerFrame;
-         xx.position.y = xx.position.y + Math.pow(secondsPerFrame,2)* ya/2 + xx.velocity.y*secondsPerFrame;
-         xx.position.z = xx.position.z + Math.pow(secondsPerFrame,2)* za/2 + xx.velocity.z*secondsPerFrame;
-
          xx.velocity.x = xx.velocity.x + xa * secondsPerFrame;
          xx.velocity.y = xx.velocity.y + ya * secondsPerFrame;
          xx.velocity.z = xx.velocity.z + za * secondsPerFrame;
+
+         xx.position.x = xx.position.x + xx.velocity.x*secondsPerFrame;
+         xx.position.y = xx.position.y + xx.velocity.y*secondsPerFrame;
+         xx.position.z = xx.position.z + xx.velocity.z*secondsPerFrame;
+
       }
    }
 }
@@ -110,18 +108,26 @@ function update() {
 function draw() {
    var c = document.getElementById('canvas');
    var ctx = c.getContext('2d');
-   ctx.save()
+   var maxd = 0;
+   ctx.save();
    ctx.clearRect(-size.x,-size.x,2*size.x,2*size.y);
-   ctx.translate(center.x - bodies[0].display.x, center.y - bodies[0].display.y);
+   for (ii in bodies) {
+      if (ii > 0) {
+         var d = distance(bodies[ii].position, bodies[0].position);
+         if (d > maxd) {
+            maxd = d;
+         }
+      }
+   }
+   var scale = 1.0/(maxd*4) * distance({x:0,y:0,z:0}, {x:ctx.canvas.clientWidth, y:ctx.canvas.clientHeight, z:0});
+   ctx.translate(ctx.canvas.clientWidth/2 - bodies[0].position.x*scale, ctx.canvas.clientHeight/2 - bodies[0].position.y*scale);
+   //ctx.scale(0.5, 0.5);
    for (ii in bodies) {
       var xx = bodies[ii];
       ctx.fillStyle = 'red';
-      var xscale = size.x / height;
-      var xp = xx.position.x / height * scale;
-      var yp = xx.position.y / height * scale;
-      var rr = xx.radius / height * scale;
-      xx.display.x = xp;
-      xx.display.y = yp;
+      var xp = xx.position.x * scale;
+      var yp = xx.position.y * scale;
+      var rr = xx.radius * scale;
       ctx.beginPath();
       ctx.arc(xp,yp,rr + 0.5,0,2*Math.PI);
       ctx.fill();
