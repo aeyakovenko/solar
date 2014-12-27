@@ -4,8 +4,8 @@
 //time seconds
 //force Newtons
 var AU=149597870700;
-var AUD=AU/(1440*60);
-var secondsPerFrame = 60*60;
+var AUD=AU/(24*60*60);
+var secondsPerFrame = 24*60*60;
 var sun = { mass:1.989e30, name:"sun", radius : 695800000,
             position:{x:2.821077216283755E-03*AU, y:-8.812560963927427E-04*AU,z:-1.367319222648302E-04*AU},
             velocity:{x:4.006129074936341E-06*AUD,y:5.206019702028657E-06*AUD,z:-9.767312861198032E-08*AUD}};
@@ -19,7 +19,8 @@ var jupiter = { mass:1.898e27, name:"jupiter", radius: 69911000,
                 velocity:{x:-5.509724185671973E-03*AUD,y:-4.896023689305917E-03*AUD,z:1.436000235561424E-04*AUD}};
 
 var bodies = [sun, earth, jupiter];
-var time = 0;
+//var bodies = [sun, earth];
+//var bodies = [sun, jupiter];
 var height = 778500000000*4;
 var center = { x: 400, y: 400 };
 var size = { x: 800, y: 800 };
