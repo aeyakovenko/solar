@@ -58,7 +58,7 @@ function update() {
          xx.position.x = xx.position.x + xchange;
          var ychange = Math.pow(secondsPerFrame,2)* ya/2 + xx.velocity.y*secondsPerFrame;
          xx.position.y = xx.position.y + ychange;
-         var zchange = Math.pow(secondsPerFrame,2)* za/2 + xx.velocitz.z*secondsPerFrame;
+         var zchange = Math.pow(secondsPerFrame,2)* za/2 + xx.velocity.z*secondsPerFrame;
          xx.position.z = xx.position.z + zchange;
          xx.velocity = { x : (xx.position.x - xstart.x)/secondsPerFrame,
                          y : (xx.position.y - xstart.y)/secondsPerFrame, 
