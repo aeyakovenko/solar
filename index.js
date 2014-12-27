@@ -1,21 +1,29 @@
 
-//mass kg
-//distance m
+//mass kilograms
+//distance meters
 //time seconds
+//force Newtons
 var AU=149597870700;
-var sun = {mass:1.989e30, name:"sun", radius : 695800000, velocity : {x: 0, y: 0, z: 0}, position : { x: 0, y: 0, z: 0}};
-var earth = { mass:5.972e24, name:"earth", radius: 6371000,
-              velocity : {x:-1.741913145545285e-02*AU, y:-1.544709454417245e-03*AU, z:5.355488200427113e-07*AU},
-              position : {x:-8.169080016031242e-02*AU, y:9.789642498007118e-01*AU,  z:-1.701348267269417e-04*AU}};
+var AUD=AU/(1440*60);
+var secondsPerFrame = 60*60;
+var sun = { mass:1.989e30, name:"sun", radius : 695800000,
+            position:{x:2.821077216283755E-03*AU, y:-8.812560963927427E-04*AU,z:-1.367319222648302E-04*AU},
+            velocity:{x:4.006129074936341E-06*AUD,y:5.206019702028657E-06*AUD,z:-9.767312861198032E-08*AUD}};
 
-//var jupiter = {mass:1.898e27, name:"jupiter", velocity : {x: 0, y: 12917.0264 }, position : { x: 778500000000, y: 0}, radius: 69911000};
-var bodies = [sun, earth];
+var earth = { mass:5.972e24, name:"earth", radius: 6371000,
+              position : {x:-8.169080016031242e-02*AU, y:9.789642498007118e-01*AU,  z:-1.701348267269417e-04*AU},
+              velocity : {x:-1.741913145545285e-02*AUD, y:-1.544709454417245e-03*AUD, z:5.355488200427113e-07*AUD}};
+
+var jupiter = { mass:1.898e27, name:"jupiter", radius: 69911000,
+                position:{x:-3.699272789771378E+00*AU, y:3.817832117430814E+00*AU, z:6.684392539978537E-02*AU},
+                velocity:{x:-5.509724185671973E-03*AUD,y:-4.896023689305917E-03*AUD,z:1.436000235561424E-04*AUD}};
+
+var bodies = [sun, earth, jupiter];
 var time = 0;
 var height = 778500000000*4;
 var center = { x: 400, y: 400 };
 var size = { x: 800, y: 800 };
 var scale = Math.pow(Math.pow(size.x,2) + Math.pow(size.y,2),0.5);
-var secondsPerFrame = 60*60;
 
 function distanceSquared(p1, p2) {
    return Math.pow((p1.x - p2.x),2) + Math.pow((p1.y - p2.y),2) + Math.pow((p1.z - p2.z),2);
@@ -85,7 +93,7 @@ function draw() {
       ctx.closePath();
       ctx.beginPath();
       ctx.font="10px Georgia";
-      ctx.fillText(xx.name + " " + JSON.stringify(xx.velocity),xp,yp);
+      ctx.fillText(xx.name + " " + distance(xx.position, bodies[0].position) / AU, xp, yp);
       ctx.closePath();
    }
 
