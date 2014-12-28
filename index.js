@@ -75,6 +75,8 @@ function force(b1, b2) {
 }
 
 function update() {
+   var forces = [];
+   //sum up all the forces
    for (xi in bodies) {
       for (yi in bodies) {
          if (xi == yi) {
@@ -84,20 +86,31 @@ function update() {
          var yy = bodies[yi];
          var gf = force(xx, yy);
          var dist = distance(xx.position, yy.position);
-         var xa = gf * xfact(dist, xx.position, yy.position) / xx.mass;
-         var ya = gf * yfact(dist, xx.position, yy.position) / xx.mass;
-         var za = gf * zfact(dist, xx.position, yy.position) / xx.mass;
-
-         //update new velocity
-         xx.velocity.x = xx.velocity.x + xa * secondsPerFrame;
-         xx.velocity.y = xx.velocity.y + ya * secondsPerFrame;
-         xx.velocity.z = xx.velocity.z + za * secondsPerFrame;
-         //update new position
-         xx.position.x = xx.position.x + xx.velocity.x*secondsPerFrame;
-         xx.position.y = xx.position.y + xx.velocity.y*secondsPerFrame;
-         xx.position.z = xx.position.z + xx.velocity.z*secondsPerFrame;
-
+         if (!forces[xi]) {
+            forces[xi] = {x:0, y:0, z:0};
+         }
+         forces[xi].x = forces[xi].x + gf * xfact(dist, xx.position, yy.position);
+         forces[xi].y = forces[xi].y + gf * yfact(dist, xx.position, yy.position);
+         forces[xi].z = forces[xi].z + gf * zfact(dist, xx.position, yy.position);
       }
+   }
+   //update the velocities
+   for (xi in forces) {
+      var xx = bodies[xi];
+      var gf = forces[xi];
+      var xa = gf.x / xx.mass;
+      var ya = gf.y / xx.mass;
+      var za = gf.z / xx.mass;
+
+      //update new velocity
+      xx.velocity.x = xx.velocity.x + xa * secondsPerFrame;
+      xx.velocity.y = xx.velocity.y + ya * secondsPerFrame;
+      xx.velocity.z = xx.velocity.z + za * secondsPerFrame;
+
+      //update new position
+      xx.position.x = xx.position.x + xx.velocity.x*secondsPerFrame;
+      xx.position.y = xx.position.y + xx.velocity.y*secondsPerFrame;
+      xx.position.z = xx.position.z + xx.velocity.z*secondsPerFrame;
    }
 }
 
