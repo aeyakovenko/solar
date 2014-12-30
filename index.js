@@ -5,7 +5,7 @@
 //force Newtons
 var AU=149597870700;
 var AUD=AU/(24*60*60);
-var secondsPerFrame = 24*60*60;
+var secondsPerFrame = 60*60*24;
 
 function getQueryVariable(variable) {
    var query = window.location.search.substring(1);
@@ -32,24 +32,23 @@ var jupiter = { mass:1.898e27, name:"jupiter", radius: 69911000,
                 position:{x:-3.699272789771378E+00*AU, y:3.817832117430814E+00*AU, z:6.684392539978537E-02*AU},
                 velocity:{x:-5.509724185671973E-03*AUD,y:-4.896023689305917E-03*AUD,z:1.436000235561424E-04*AUD}};
 
+var luna = { mass:7.349e22, name:"luna", radius:1738000, 
+             position:{x:-7.935958289487197E-02*AU,y:9.781941340160407E-01*AU, z:-5.022973188956466E-05*AU},
+             velocity:{x:-1.720984664581042E-02*AUD,y:-9.675447692442363E-04*AUD,z:-4.367862102591878E-05*AUD}};
+
 var system = {};
 system["sun"] = sun;
 system["earth"] = earth;
 system["jupiter"] = jupiter;
+system["luna"] = luna;
 
-var bodies = [sun,earth,jupiter];
+var bodies = [sun,earth,jupiter,luna];
 if (getQueryVariable('bodies')) {
    bodies = getQueryVariable('bodies').split(',');
    for (ii in bodies) {
       bodies[ii] = system[bodies[ii]];
    }
 }
-//var bodies = [sun, earth];
-//var bodies = [sun, jupiter];
-var height = 778500000000*4;
-var center = { x: 400, y: 400 };
-var size = { x: 800, y: 800 };
-var scale = Math.pow(Math.pow(size.x,2) + Math.pow(size.y,2),0.5);
 
 function distanceSquared(p1, p2) {
    return Math.pow((p1.x - p2.x),2) + Math.pow((p1.y - p2.y),2) + Math.pow((p1.z - p2.z),2);
@@ -74,7 +73,7 @@ function force(b1, b2) {
    return b1.mass * b2.mass * g / d;
 }
 
-function update() {
+function update_forces(bodies) {
    var forces = [];
    //sum up all the forces
    for (xi in bodies) {
@@ -94,6 +93,9 @@ function update() {
          forces[xi].z = forces[xi].z + gf * zfact(dist, xx.position, yy.position);
       }
    }
+   return forces;
+}
+function update_velocities(bodies, forces) {
    //update the velocities
    for (xi in forces) {
       var xx = bodies[xi];
@@ -114,7 +116,7 @@ function update() {
    }
 }
 
-function draw() {
+function draw(bodies) {
    var c = document.getElementById('canvas');
    var ctx = c.getContext('2d');
    var maxd = 0;
@@ -150,8 +152,21 @@ function draw() {
 }
 
 function drawloop() {
-   update();
-   draw();
+   var forces = update_forces(bodies);
+   update_velocities(bodies, forces);
+   draw(bodies);
 }
 
+var center = { x: 400, y: 400 };
+var size = { x: 800, y: 800 };
+
+var canvas = document.createElement('canvas');
+canvas.width  = size.x;
+canvas.height = size.y;
+canvas.id = "canvas";
+if(!canvas.getContext('2d')) {
+   canvas.innerHTML = "Your browser sucks";
+
+}
+document.body.appendChild(canvas)
 setInterval(drawloop, 1000/60);
